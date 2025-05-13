@@ -1,0 +1,28 @@
+name: Validar nome da branch
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verificar nome da Branch
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "Nome da branch: $BRANCH_NAME"
+          
+          PATTERN="^(feature|bugfix|release|hotfix|docs|dev)/.+$"
+          
+          if [[ ! "$BRANCH_NAME" =~ $PATTERN ]]; then
+            echo "🚨 Nome de branch inválido: $BRANCH_NAME. O nome da branch deve seguir o padrão: [tipo]/[finalidade]/[nome-da-branch], onde [tipo] é 'feature', 'bugfix', 'release', 'hotfix', 'docs' ou 'dev'."
+            exit 1
+          fi
+
+      - name: Conclusão da Verificação
+        if: success()
+        run: |
+          echo "Nome da branch válido: $BRANCH_NAME."
